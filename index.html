@@ -1,20 +1,54 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Maggie Joy Wordle</title>
+    <title>Guess the Name</title>
+
     <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            margin-top: 40px;
+            margin-top: 30px;
         }
 
-        #board {
-            display: grid;
-            grid-template-columns: repeat(9, 50px);
-            gap: 5px;
-            justify-content: center;
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        #status {
+            font-size: 20px;
             margin-bottom: 20px;
+        }
+
+        #inputs {
+            margin-bottom: 20px;
+        }
+
+        input {
+            font-size: 24px;
+            text-transform: uppercase;
+            text-align: center;
+            padding: 8px;
+            margin: 5px;
+        }
+
+        #firstName {
+            width: 180px;
+        }
+
+        #middleName {
+            width: 100px;
+        }
+
+        button {
+            font-size: 20px;
+            padding: 8px 16px;
+        }
+
+        .row {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin-bottom: 5px;
         }
 
         .tile {
@@ -23,38 +57,24 @@
             border: 2px solid #ccc;
             font-size: 28px;
             font-weight: bold;
-            text-transform: uppercase;
             display: flex;
-            align-items: center;
             justify-content: center;
+            align-items: center;
         }
 
         .correct {
-            background-color: #6aaa64;
+            background: #6aaa64;
             color: white;
         }
 
         .present {
-            background-color: #c9b458;
+            background: #c9b458;
             color: white;
         }
 
         .absent {
-            background-color: #787c7e;
+            background: #787c7e;
             color: white;
-        }
-
-        input {
-            font-size: 24px;
-            text-transform: uppercase;
-            width: 250px;
-            text-align: center;
-        }
-
-        button {
-            font-size: 20px;
-            padding: 8px 16px;
-            margin-left: 10px;
         }
 
         #message {
@@ -66,64 +86,146 @@
 </head>
 <body>
 
-<h1>Guess the Secret Name</h1>
-<p>9 letters. No spaces.</p>
+<h1>Guess the Name</h1>
+
+<div id="status">
+    Guesses Remaining: <span id="remaining">6</span>
+</div>
+
+<div id="inputs">
+    <input id="firstName"
+           maxlength="6"
+           placeholder="First Name">
+
+    <input id="middleName"
+           maxlength="3"
+           placeholder="Middle">
+
+    <button onclick="submitGuess()">Guess</button>
+</div>
 
 <div id="board"></div>
-
-<input id="guess" maxlength="9" placeholder="Enter 9 letters">
-<button onclick="submitGuess()">Guess</button>
 
 <div id="message"></div>
 
 <script>
-const answer = "MAGGIEJOY";
-const maxGuesses = 6;
-let guesses = 0;
+
+const FIRST = "MAGGIE";
+const MIDDLE = "JOY";
+
+let remaining = 6;
+
+function evaluateLetter(letter, position, answer) {
+
+    if (letter === answer[position]) {
+        return "correct";
+    }
+
+    if (answer.includes(letter)) {
+        return "present";
+    }
+
+    return "absent";
+}
+
+function makeTile(letter, result) {
+
+    const tile = document.createElement("div");
+    tile.classList.add("tile");
+    tile.classList.add(result);
+    tile.textContent = letter;
+
+    return tile;
+}
 
 function submitGuess() {
-    if (guesses >= maxGuesses) return;
 
-    const input = document.getElementById("guess");
-    const guess = input.value.toUpperCase().replace(/[^A-Z]/g, "");
+    if (remaining <= 0) return;
 
-    if (guess.length !== 9) {
-        alert("Guess must be exactly 9 letters.");
+    const firstGuess =
+        document.getElementById("firstName")
+        .value
+        .toUpperCase();
+
+    const middleGuess =
+        document.getElementById("middleName")
+        .value
+        .toUpperCase();
+
+    if (firstGuess.length !== 6 ||
+        middleGuess.length !== 3) {
+
+        alert(
+            "First name must be 6 letters and middle name must be 3 letters."
+        );
         return;
     }
 
     const board = document.getElementById("board");
 
-    for (let i = 0; i < 9; i++) {
-        const tile = document.createElement("div");
-        tile.classList.add("tile");
-        tile.textContent = guess[i];
+    const row = document.createElement("div");
+    row.classList.add("row");
 
-        if (guess[i] === answer[i]) {
-            tile.classList.add("correct");
-        } else if (answer.includes(guess[i])) {
-            tile.classList.add("present");
-        } else {
-            tile.classList.add("absent");
-        }
+    for (let i = 0; i < 6; i++) {
 
-        board.appendChild(tile);
+        row.appendChild(
+            makeTile(
+                firstGuess[i],
+                evaluateLetter(firstGuess[i], i, FIRST)
+            )
+        );
     }
 
-    guesses++;
+    const spacer = document.createElement("div");
+    spacer.style.width = "20px";
+    row.appendChild(spacer);
 
-    if (guess === answer) {
-        document.getElementById("message").textContent =
-            "🎉 Correct! The answer is Maggie Joy!";
-        input.disabled = true;
-    } else if (guesses >= maxGuesses) {
-        document.getElementById("message").textContent =
-            "❌ Out of guesses! The answer was Maggie Joy.";
-        input.disabled = true;
+    for (let i = 0; i < 3; i++) {
+
+        row.appendChild(
+            makeTile(
+                middleGuess[i],
+                evaluateLetter(middleGuess[i], i, MIDDLE)
+            )
+        );
     }
 
-    input.value = "";
+    board.appendChild(row);
+
+    remaining--;
+    document.getElementById("remaining").textContent =
+        remaining;
+
+    if (firstGuess === FIRST &&
+        middleGuess === MIDDLE) {
+
+        document.getElementById("message").innerHTML =
+            "🎉 You got it!<br><br>Maggie Joy";
+
+        disableInputs();
+        return;
+    }
+
+    if (remaining === 0) {
+
+        document.getElementById("message").innerHTML =
+            "❌ Out of guesses!<br><br>The answer was Maggie Joy.";
+
+        disableInputs();
+    }
+
+    document.getElementById("firstName").value = "";
+    document.getElementById("middleName").value = "";
+
+    document.getElementById("firstName").focus();
 }
+
+function disableInputs() {
+
+    document.getElementById("firstName").disabled = true;
+    document.getElementById("middleName").disabled = true;
+}
+
 </script>
 
 </body>
