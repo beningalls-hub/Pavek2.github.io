@@ -1,1 +1,132 @@
 # Pavek2.github.io
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Maggie Joy Wordle</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        #board {
+            display: grid;
+            grid-template-columns: repeat(9, 50px);
+            gap: 5px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .tile {
+            width: 50px;
+            height: 50px;
+            border: 2px solid #ccc;
+            font-size: 28px;
+            font-weight: bold;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .correct {
+            background-color: #6aaa64;
+            color: white;
+        }
+
+        .present {
+            background-color: #c9b458;
+            color: white;
+        }
+
+        .absent {
+            background-color: #787c7e;
+            color: white;
+        }
+
+        input {
+            font-size: 24px;
+            text-transform: uppercase;
+            width: 250px;
+            text-align: center;
+        }
+
+        button {
+            font-size: 20px;
+            padding: 8px 16px;
+            margin-left: 10px;
+        }
+
+        #message {
+            margin-top: 20px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Guess the Secret Name</h1>
+<p>9 letters. No spaces.</p>
+
+<div id="board"></div>
+
+<input id="guess" maxlength="9" placeholder="Enter 9 letters">
+<button onclick="submitGuess()">Guess</button>
+
+<div id="message"></div>
+
+<script>
+const answer = "MAGGIEJOY";
+const maxGuesses = 6;
+let guesses = 0;
+
+function submitGuess() {
+    if (guesses >= maxGuesses) return;
+
+    const input = document.getElementById("guess");
+    const guess = input.value.toUpperCase().replace(/[^A-Z]/g, "");
+
+    if (guess.length !== 9) {
+        alert("Guess must be exactly 9 letters.");
+        return;
+    }
+
+    const board = document.getElementById("board");
+
+    for (let i = 0; i < 9; i++) {
+        const tile = document.createElement("div");
+        tile.classList.add("tile");
+        tile.textContent = guess[i];
+
+        if (guess[i] === answer[i]) {
+            tile.classList.add("correct");
+        } else if (answer.includes(guess[i])) {
+            tile.classList.add("present");
+        } else {
+            tile.classList.add("absent");
+        }
+
+        board.appendChild(tile);
+    }
+
+    guesses++;
+
+    if (guess === answer) {
+        document.getElementById("message").textContent =
+            "🎉 Correct! The answer is Maggie Joy!";
+        input.disabled = true;
+    } else if (guesses >= maxGuesses) {
+        document.getElementById("message").textContent =
+            "❌ Out of guesses! The answer was Maggie Joy.";
+        input.disabled = true;
+    }
+
+    input.value = "";
+}
+</script>
+
+</body>
+</html>
