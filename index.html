@@ -82,6 +82,30 @@
             font-size: 24px;
             font-weight: bold;
         }
+        #popup {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        #popupContent {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 48px;
+            font-weight: bold;
+            max-width: 90%;
+        }
+        
+        #popupContent p {
+            margin-top: 20px;
+            font-size: 28px;
+        }
     </style>
 </head>
 <body>
@@ -117,6 +141,20 @@
 
 <div id="message"></div>
 
+<div id="popup">
+    <div id="popupContent">
+        <div id="popupTitle"></div>
+        <p>Maggie Joy</p>
+    </div>
+</div>
+
+<canvas id="confettiCanvas"
+        style="position:fixed;
+               inset:0;
+               pointer-events:none;
+               z-index:999;">
+</canvas>
+
 <script>
 
 const FIRST = "MAGGIE";
@@ -145,6 +183,74 @@ function makeTile(letter, result) {
     tile.textContent = letter;
 
     return tile;
+}
+
+function showPopup(title) {
+
+    document.getElementById("popupTitle").innerHTML = title;
+
+    document.getElementById("popup").style.display = "flex";
+}
+
+function launchConfetti() {
+
+    const canvas =
+        document.getElementById("confettiCanvas");
+
+    const ctx = canvas.getContext("2d");
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const pieces = [];
+
+    for (let i = 0; i < 250; i++) {
+
+        pieces.push({
+            x: Math.random() * canvas.width,
+            y: -20,
+            vx: (Math.random() - 0.5) * 6,
+            vy: Math.random() * 4 + 2,
+            size: Math.random() * 8 + 4,
+            color: `hsl(${Math.random()*360},100%,50%)`
+        });
+    }
+
+    let frames = 0;
+
+    function animate() {
+
+        ctx.clearRect(
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+
+        pieces.forEach(p => {
+
+            p.x += p.vx;
+            p.y += p.vy;
+            p.vy += 0.05;
+
+            ctx.fillStyle = p.color;
+
+            ctx.fillRect(
+                p.x,
+                p.y,
+                p.size,
+                p.size
+            );
+        });
+
+        frames++;
+
+        if (frames < 300) {
+            requestAnimationFrame(animate);
+        }
+    }
+
+    animate();
 }
 
 function submitGuess() {
