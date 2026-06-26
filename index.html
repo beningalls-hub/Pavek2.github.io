@@ -114,7 +114,7 @@
 <p> guess the Pavek's baby's name! </p>
     
 <p style="color: #666; font-size: 18px;">
-    First Name: 6 letters • Middle Name: 3 letters
+    First Name: 4 letters • Middle Name: 5 letters
 </p>
 
 <p style="color: #666; font-size: 18px;">
@@ -144,7 +144,7 @@
 <div id="popup">
     <div id="popupContent">
         <div id="popupTitle"></div>
-        <p>Maggie Joy</p>
+        <p>Levi Silas</p>
     </div>
 </div>
 
@@ -157,8 +157,8 @@
 
 <script>
 
-const FIRST = "MAGGIE";
-const MIDDLE = "JOY";
+const FIRST = "LEVI";
+const MIDDLE = "SILAS";
 
 let remaining = 8;
 
@@ -267,11 +267,11 @@ function submitGuess() {
         .value
         .toUpperCase();
 
-    if (firstGuess.length !== 6 ||
-        middleGuess.length !== 3) {
+    if (firstGuess.length !== 4 ||
+        middleGuess.length !== 5) {
 
         alert(
-            "First name must be 6 letters and middle name must be 3 letters."
+            "First name must be 4 letters and middle name must be 5 letters."
         );
         return;
     }
@@ -281,7 +281,7 @@ function submitGuess() {
     const row = document.createElement("div");
     row.classList.add("row");
 
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 4; i++) {
 
         row.appendChild(
             makeTile(
@@ -295,7 +295,7 @@ function submitGuess() {
     spacer.style.width = "20px";
     row.appendChild(spacer);
 
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 5; i++) {
 
         row.appendChild(
             makeTile(
